@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: inventory-flow-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: inventory-flow-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      - key: SEED_DEMO_DATA
+        value: "true"
+      - key: CORS_ORIGINS
+        value: "https://inventory-flow.vercel.app,http://localhost:5173"
+    plan: free
+
+databases:
+  - name: inventory-flow-db
+    plan: free
+    databaseName: inventory_db
+    user: ioms
