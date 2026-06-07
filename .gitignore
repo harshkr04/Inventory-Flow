@@ -53,3 +53,6 @@ env/
 *.sqlite
 *.sqlite3
 production.db
+
+# Lovable (scaffolding tool config — not needed in repo)
+.lovable/

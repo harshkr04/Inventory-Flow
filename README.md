@@ -1,224 +1,234 @@
-# Inventory & Order Management System (IOMS)
+# 📦 Inventory Flow
 
-A production-ready full-stack Inventory & Order Management System.
-
-- **Frontend:** React 18 + TypeScript + Vite + Tailwind CSS + Recharts
-- **Backend:** FastAPI (Python 3.11) + SQLAlchemy 2.0 + Pydantic v2
-- **Database:** PostgreSQL 16
-- **Auth:** JWT (bcrypt password hashing) with `admin` / `manager` roles
-- **Containerization:** Docker & Docker Compose
-- **API Docs:** Swagger UI at `/docs`, ReDoc at `/redoc`
-
-> ⚠️ This is a self-hosted FastAPI stack — it does **not** run inside the Lovable preview.
-> Run it locally with Docker Compose (recommended) or natively per the instructions below.
+A full-stack **Inventory & Order Management System** built with a modern tech stack. Manage products, customers, orders, and inventory levels — all in one clean, responsive interface.
 
 ---
 
-## Project Structure
+## ✨ Features
 
-```
-.
-├── docker-compose.yml
-├── .env.example
-├── backend/
-│   ├── Dockerfile
-│   ├── requirements.txt
-│   ├── .env.example
-│   └── app/
-│       ├── main.py                # FastAPI app, CORS, lifespan, router mounting
-│       ├── seed.py                # Demo data seeding
-│       ├── core/                  # config, database, security (JWT/bcrypt)
-│       ├── models/                # SQLAlchemy ORM models
-│       ├── schemas/               # Pydantic request/response schemas
-│       ├── repositories/          # Data-access layer
-│       ├── services/              # Business logic (transactions, validation)
-│       └── api/
-│           ├── deps.py            # Auth & RBAC dependencies
-│           └── v1/                # auth, products, customers, orders, dashboard
-└── frontend/
-    ├── Dockerfile
-    ├── package.json
-    ├── vite.config.ts
-    ├── tailwind.config.js
-    └── src/
-        ├── main.tsx, App.tsx
-        ├── lib/                   # api client (axios), utils
-        ├── store/                 # zustand auth store
-        ├── types/                 # shared TS types
-        ├── components/
-        │   ├── ui/                # Button, Input, Card, Modal, Badge, Pagination…
-        │   └── layout/            # AppShell (sidebar + topbar), ProtectedRoute
-        └── pages/                 # Login, Dashboard, Products, Customers, Orders, LowStock
-```
+- 🔐 **JWT Authentication** — Secure login with token-based auth
+- 📊 **Dashboard** — Real-time KPIs: revenue, orders, low-stock alerts
+- 📦 **Product Management** — Full CRUD with category, price, and stock tracking
+- 👥 **Customer Management** — Customer profiles with order history
+- 🛒 **Order Management** — Create, track, and manage orders end-to-end
+- 🏪 **Inventory Control** — Stock level monitoring with low-stock alerts
+- 🐳 **Docker Ready** — One-command deployment with Docker Compose
+- 📄 **API Docs** — Auto-generated Swagger UI at `/docs`
 
 ---
 
-## Quick Start (Docker Compose)
+## 🛠️ Tech Stack
+
+### Frontend
+| Technology | Purpose |
+|---|---|
+| React 18 + TypeScript | UI framework |
+| Vite | Build tool & dev server |
+| React Router v6 | Client-side routing |
+| Tailwind CSS | Styling |
+| shadcn/ui | Component library |
+| Axios | HTTP client |
+
+### Backend
+| Technology | Purpose |
+|---|---|
+| FastAPI | REST API framework |
+| SQLAlchemy 2.0 | ORM |
+| PostgreSQL | Primary database |
+| Pydantic v2 | Data validation |
+| python-jose | JWT authentication |
+| passlib + bcrypt | Password hashing |
+| Uvicorn | ASGI server |
+
+### Infrastructure
+| Technology | Purpose |
+|---|---|
+| Docker + Docker Compose | Containerisation |
+| PostgreSQL 15 | Production database |
+
+---
+
+## 🚀 Quick Start
+
+### Option 1 — Docker Compose (Recommended)
+
+> Requires [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed.
 
 ```bash
+# 1. Clone the repo
+git clone https://github.com/harshkr04/Inventory-Flow.git
+cd Inventory-Flow
+
+# 2. Copy and configure environment variables
 cp .env.example .env
+# Edit .env with your preferred values
+
+# 3. Start all services (PostgreSQL + Backend + Frontend)
 docker compose up --build
 ```
 
-Services:
-
-| Service     | URL                                  |
-| ----------- | ------------------------------------ |
-| Frontend    | http://localhost:5173                |
-| Backend API | http://localhost:8000/api/v1         |
-| Swagger UI  | http://localhost:8000/docs           |
-| Postgres    | localhost:5432 (user `ioms`)         |
-
-The backend auto-creates tables on startup and seeds demo data when `SEED_DEMO_DATA=true` (default).
-
-### Demo accounts
-
-| Role    | Email                | Password     |
-| ------- | -------------------- | ------------ |
-| Admin   | `admin@ioms.com`   | `admin123`   |
-| Manager | `manager@ioms.com` | `manager123` |
-
-> Change `JWT_SECRET` in `.env` (and the demo passwords) before any non-local use.
+| Service | URL |
+|---|---|
+| Frontend | http://localhost:5173 |
+| Backend API | http://localhost:8000 |
+| Swagger Docs | http://localhost:8000/docs |
 
 ---
 
-## Local Development (without Docker)
+### Option 2 — Local Development
 
-### Backend
+#### Prerequisites
+- Python 3.11+
+- Node.js 18+ (or [Bun](https://bun.sh/))
+- PostgreSQL 15
+
+#### Backend
 
 ```bash
 cd backend
-python -m venv .venv && source .venv/bin/activate
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+
+# Install dependencies
 pip install -r requirements.txt
+
+# Configure environment
 cp .env.example .env
-# Edit DATABASE_URL to point at your local Postgres
+# Edit .env with your DATABASE_URL and JWT_SECRET
+
+# Run the server
 uvicorn app.main:app --reload --port 8000
 ```
 
-### Frontend
+#### Frontend
 
 ```bash
 cd frontend
+
+# Install dependencies
+npm install          # or: bun install
+
+# Configure environment
 cp .env.example .env
-npm install
-npm run dev
+# Set VITE_API_URL=http://localhost:8000/api
+
+# Start dev server
+npm run dev          # or: bun run dev
 ```
 
 ---
 
-## Features
+## ⚙️ Environment Variables
 
-### Product Management
-- CRUD with **unique SKU**, price ≥ 0, stock ≥ 0 enforced at DB and API layers
-- Search by name or SKU, pagination
+### Root `.env` (used by Docker Compose)
 
-### Customer Management
-- CRUD with **unique email** and email validation (Pydantic `EmailStr`)
-- Search by name or email, pagination
+```env
+POSTGRES_USER=ioms
+POSTGRES_PASSWORD=ioms_pass
+POSTGRES_DB=ioms_db
+JWT_SECRET=replace-with-strong-random-secret
+```
 
-### Order Management
-- Create order with multiple items (single DB transaction; rolls back on any failure)
-- Inventory validation with `SELECT … FOR UPDATE` row-locking to prevent overselling
-- Automatic total calculation
-- Cancel order → restores stock for confirmed orders
-- Order statuses: `pending`, `confirmed`, `cancelled`
+### `backend/.env`
 
-### Dashboard
-- KPIs: products, customers, orders, revenue, low-stock count
-- Charts (Recharts): Revenue per month, Orders per month, Top selling products, Inventory distribution (pie)
-- Recent orders + Low stock alerts
+```env
+DATABASE_URL=postgresql+psycopg2://ioms:ioms_pass@localhost:5432/ioms_db
+JWT_SECRET=replace-with-strong-random-secret
+JWT_ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+SEED_DEMO_DATA=true
+```
 
-### Security
-- JWT access tokens (`HS256`) with bcrypt password hashing
-- All `/api/v1/**` routes (except `/auth/login`) require auth
-- Role-based access: only `admin` can delete products / customers, create users
+### `frontend/.env`
 
----
+```env
+VITE_API_URL=http://localhost:8000/api
+```
 
-## API Surface (`/api/v1`)
-
-### Auth
-- `POST /auth/login` — body `{ email, password }` → `{ access_token, user }`
-- `GET  /auth/me`
-- `POST /auth/users` (admin) — create users
-
-### Products
-- `GET  /products?q=&page=&page_size=`
-- `GET  /products/{id}`
-- `POST /products`
-- `PUT  /products/{id}`
-- `DELETE /products/{id}` (admin)
-
-### Customers
-- `GET  /customers?q=&page=&page_size=`
-- `GET  /customers/{id}`
-- `POST /customers`
-- `PUT  /customers/{id}`
-- `DELETE /customers/{id}` (admin)
-
-### Orders
-- `GET  /orders?status=&page=&page_size=`
-- `GET  /orders/{id}`
-- `POST /orders` — body `{ customer_id, items: [{ product_id, quantity }] }`
-- `PUT  /orders/{id}/cancel`
-
-### Dashboard
-- `GET  /dashboard/summary`
-
-Full schemas + interactive testing at **`/docs`**.
+> **Note:** Never commit `.env` files. They are already listed in `.gitignore`.
 
 ---
 
-## Database Schema
+## 📁 Project Structure
 
-Tables: `users`, `products`, `customers`, `orders`, `order_items`.
-
-- `products.sku` UNIQUE, `CHECK price >= 0`, `CHECK stock_quantity >= 0`
-- `customers.email` UNIQUE
-- `orders.customer_id` → `customers.id` (`ON DELETE RESTRICT`)
-- `order_items.order_id` → `orders.id` (`ON DELETE CASCADE`)
-- `order_items.product_id` → `products.id` (`ON DELETE RESTRICT`)
-- Indexes on FKs, `orders.status`, `orders.order_date`, `products.name`, `customers.email`
-- `CHECK quantity > 0`, `CHECK unit_price >= 0` on `order_items`
-
-Schema is created automatically by SQLAlchemy at startup. For production, generate Alembic migrations from the same models.
-
----
-
-## Deployment
-
-### Backend → Render / Railway
-
-1. Push the repo to GitHub.
-2. Create a **Web Service** pointing at the `backend/` directory.
-3. Build command: `pip install -r requirements.txt`
-4. Start command: `uvicorn app.main:app --host 0.0.0.0 --port $PORT`
-5. Environment variables:
-   - `DATABASE_URL` — Supabase / Render Postgres connection string (use `postgresql+psycopg2://…`)
-   - `JWT_SECRET` — strong random secret
-   - `CORS_ORIGINS` — your frontend URL, e.g. `https://your-app.vercel.app`
-   - `SEED_DEMO_DATA=false` for production
-
-### Database → Supabase
-
-1. Create a Supabase project; copy the **connection string** (Direct or Pooled).
-2. Prefix the scheme with `postgresql+psycopg2://` for SQLAlchemy.
-3. The first backend boot creates all tables.
-
-### Frontend → Vercel
-
-1. Import the repo into Vercel; set **Root Directory** to `frontend`.
-2. Framework preset: **Vite**. Build command `npm run build`, output `dist`.
-3. Environment variable: `VITE_API_URL=https://your-backend.onrender.com/api/v1`
-4. Deploy.
+```
+Inventory-Flow/
+├── backend/                    # FastAPI application
+│   ├── app/
+│   │   ├── api/v1/             # Route handlers (auth, products, orders…)
+│   │   ├── core/               # Config, database, security
+│   │   ├── models/             # SQLAlchemy ORM models
+│   │   ├── repositories/       # Data access layer
+│   │   ├── schemas/            # Pydantic request/response schemas
+│   │   ├── services/           # Business logic layer
+│   │   ├── seed.py             # Demo data seeder
+│   │   └── main.py             # App entry point
+│   ├── Dockerfile
+│   └── requirements.txt
+│
+├── frontend/                   # React + TypeScript application
+│   ├── src/
+│   │   ├── components/         # Reusable UI components
+│   │   ├── pages/              # Route-level page components
+│   │   ├── lib/                # API client, utilities
+│   │   └── App.tsx             # Root component & routing
+│   ├── Dockerfile
+│   └── package.json
+│
+├── docker-compose.yml          # Full-stack orchestration
+├── .env.example                # Environment variable template
+└── README.md
+```
 
 ---
 
-## Code Quality
+## 🔌 API Endpoints
 
-- TypeScript `strict: true` on the frontend
-- Backend follows Clean Architecture: API → Service → Repository → Model
-- Atomic, transactional order creation with stock locking
-- Pydantic v2 schemas with field-level validation (bounds, lengths, email format)
-- Role-based dependencies on every protected route
-- No mock data — backend is fully functional out of the box
+The backend auto-generates interactive docs — visit **http://localhost:8000/docs** when running.
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/auth/login` | Authenticate & get JWT token |
+| GET | `/api/products` | List all products |
+| POST | `/api/products` | Create a product |
+| GET | `/api/products/{id}` | Get product details |
+| PUT | `/api/products/{id}` | Update a product |
+| DELETE | `/api/products/{id}` | Delete a product |
+| GET | `/api/customers` | List all customers |
+| POST | `/api/customers` | Create a customer |
+| GET | `/api/orders` | List all orders |
+| POST | `/api/orders` | Create an order |
+| GET | `/api/inventory` | View inventory levels |
+| GET | `/api/inventory/low-stock` | Get low-stock items |
+| GET | `/api/dashboard` | Dashboard statistics |
+| GET | `/health` | Health check |
+
+---
+
+## 🌱 Demo Data
+
+When `SEED_DEMO_DATA=true` (default in Docker), the backend auto-seeds the database with sample products, customers, and orders on first start. Use the default credentials from the seeder to log in.
+
+---
+
+## 🐳 Docker Services
+
+| Container | Image | Port |
+|---|---|---|
+| `ioms_postgres` | postgres:15-alpine | 5432 |
+| `ioms_backend` | Custom (FastAPI) | 8000 |
+| `ioms_frontend` | Custom (React/Vite) | 5173 |
+
+---
+
+## 📜 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+  Built with ❤️ by <a href="https://github.com/harshkr04">Harsh Kumar Singh</a>
+</div>
